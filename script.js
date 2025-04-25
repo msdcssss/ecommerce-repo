@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', function () {
     updateCartIcon();
 });
 
-async function loadProducts() {
+async function loadProducts2() {
     try {
         const container = document.getElementById('products-container');
         container.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> Loading products...</div>';
@@ -83,6 +83,36 @@ async function loadProducts() {
             '<div class="error"><i class="fas fa-exclamation-circle"></i> Failed to load products. Please try again later.</div>';
     }
 }
+async function loadProducts() {
+    try {
+        const container = document.getElementById('products-container');
+        container.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> Loading products...</div>';
+        
+        // Use the CORS proxy for testing
+        const corsProxy = 'https://cors-anywhere.herokuapp.com/'; 
+        const [productsResponse, categoriesResponse] = await Promise.all([
+            fetch(corsProxy + 'https://fakestoreapi.com/products'),
+            fetch(corsProxy + 'https://fakestoreapi.com/products/categories')
+        ]);
+        
+        if (!productsResponse.ok || !categoriesResponse.ok) {
+            throw new Error('Failed to fetch data');
+        }
+        
+        const productsData = await productsResponse.json();
+        const categories = await categoriesResponse.json();
+        
+        renderProducts(productsData);
+        setupProductModal();
+        setupCategoryFilters(categories);
+        setupPagination(productsData.length);
+    } catch (error) {
+        console.error('Error loading data:', error);
+        document.getElementById('products-container').innerHTML = 
+            '<div class="error"><i class="fas fa-exclamation-circle"></i> Failed to load products. Please try again later.</div>';
+    }
+}
+
 
 function renderProducts(products) {
     const container = document.getElementById('products-container');
