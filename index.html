@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Shop - Home</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <header class="header">
+        <div class="logo">Online Shop</div>
+        <div class="search-bar">
+            <input type="text" id="search-input" placeholder="Search products...">
+            <button id="search-btn"><i class="fas fa-search"></i></button>
+        </div>
+        <nav class="nav-icons">
+            <button id="cart-btn">
+                <i class="fas fa-shopping-cart"></i>
+                <span class="cart-badge">0</span>
+            </button>
+        </nav>
+    </header>
+
+    <div class="hero-banner">
+        <div class="hero-content">
+            <h1>Welcome to Our Online Shop</h1>
+            <p>Discover amazing products at unbeatable prices</p>
+            <button class="shop-now-btn">Shop Now</button>
+        </div>
+    </div>
+
+    <div class="products-filter-container">
+        <div class="filter-container" id="filter-container"></div>
+    </div>
+
+    <div class="sort-container">
+        <label for="sort-options">Sort By:</label>
+        <select id="sort-options">
+            <option value="default">Default</option>
+            <option value="price-low">Price: Low to High</option>
+            <option value="price-high">Price: High to Low</option>
+            <option value="name-asc">Name: A to Z</option>
+            <option value="name-desc">Name: Z to A</option>
+        </select>
+    </div>
+
+    <div id="products-container" class="products-container"></div>
+    <div class="pagination" id="pagination"></div>
+
+    <div class="newsletter-section">
+        <h2>Subscribe to Our Newsletter</h2>
+        <p>Get the latest updates on new products and special offers</p>
+        <form id="newsletter-form">
+            <input type="email" placeholder="Enter your email address" required>
+            <button type="submit">Subscribe</button>
+        </form>
+    </div>
+
+    <!-- Product Modal -->
+    <div id="productModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <div class="modal-body">
+                <div class="modal-image-container">
+                    <img id="modalProductImage" src="" alt="" class="modal-image">
+                    <div class="image-zoom-controls">
+                        <button class="zoom-btn" id="zoom-in"><i class="fas fa-search-plus"></i></button>
+                        <button class="zoom-btn" id="zoom-out"><i class="fas fa-search-minus"></i></button>
+                    </div>
+                </div>
+                <div class="modal-info">
+                    <h2 id="modalProductTitle"></h2>
+                    <div class="rating">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star-half-alt"></i>
+                        <span class="review-count">(24 reviews)</span>
+                    </div>
+                    <p class="modal-price" id="modalProductPrice"></p>
+                    <p class="modal-stock" id="modalProductStock"></p>
+                    <p id="modalProductDescription"></p>
+                    <div class="quantity-controls">
+                        <button class="quantity-btn" id="decrementQty">−</button>
+                        <input type="number" id="productQuantity" value="1" min="1">
+                        <button class="quantity-btn" id="incrementQty">+</button>
+                    </div>
+                    <button class="add-to-cart-modal" id="addToCartModal">
+                        <i class="fas fa-cart-plus"></i> Add to Cart
+                    </button>
+                    <div class="product-meta">
+                        <p><i class="fas fa-tag"></i> Category: <span id="modalProductCategory"></span></p>
+                        <p><i class="fas fa-box"></i> Free shipping on orders over $50</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Shop</h3>
+                <ul>
+                    <li><a href="#">All Products</a></li>
+                    <li><a href="#">Featured</a></li>
+                    <li><a href="#">New Arrivals</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Help</h3>
+                <ul>
+                    <li><a href="#">FAQs</a></li>
+                    <li><a href="#">Shipping</a></li>
+                    <li><a href="#">Returns</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Company</h3>
+                <ul>
+                    <li><a href="#">About Us</a></li>
+                    <li><a href="#">Contact</a></li>
+                    <li><a href="#">Careers</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Connect</h3>
+                <div class="social-icons">
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+        </div>
+        <p class="copyright">&copy; 2025 Online Shop | All Rights Reserved</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
