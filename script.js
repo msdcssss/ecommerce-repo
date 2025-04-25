@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // Initialize page-specific functionality
-    if (window.location.pathname.includes('index.html') || window.location.pathname === '/') {
+    if (document.getElementById('products-container')) {
         loadProducts();
         setupSearch();
         setupCartButton();
@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', function () {
     updateCartIcon();
 });
 
-async function loadProducts2() {
+async function loadProducts() {
     try {
         const container = document.getElementById('products-container');
         container.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> Loading products...</div>';
@@ -83,38 +83,10 @@ async function loadProducts2() {
             '<div class="error"><i class="fas fa-exclamation-circle"></i> Failed to load products. Please try again later.</div>';
     }
 }
-async function loadProducts() {
-    try {
-        const container = document.getElementById('products-container');
-        container.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> Loading products...</div>';
-        
-        // Use the CORS proxy for testing
-        const corsProxy = 'https://cors-anywhere.herokuapp.com/'; 
-        const [productsResponse, categoriesResponse] = await Promise.all([
-            fetch(corsProxy + 'https://fakestoreapi.com/products'),
-            fetch(corsProxy + 'https://fakestoreapi.com/products/categories')
-        ]);
-        
-        if (!productsResponse.ok || !categoriesResponse.ok) {
-            throw new Error('Failed to fetch data');
-        }
-        
-        const productsData = await productsResponse.json();
-        const categories = await categoriesResponse.json();
-        
-        renderProducts(productsData);
-        setupProductModal();
-        setupCategoryFilters(categories);
-        setupPagination(productsData.length);
-    } catch (error) {
-        console.error('Error loading data:', error);
-        document.getElementById('products-container').innerHTML = 
-            '<div class="error"><i class="fas fa-exclamation-circle"></i> Failed to load products. Please try again later.</div>';
-    }
-}
 
 
-function renderProducts2(products) {
+
+function renderProducts(products) {
     const container = document.getElementById('products-container');
     
     // Sort products based on current sort option
@@ -173,66 +145,7 @@ function renderProducts2(products) {
         });
     });
 }
-function renderProducts(products) {
-    const container = document.getElementById('products-container');
-    
-    // Sort products based on current sort option
-    let sortedProducts = [...products];
-    switch(currentSort) {
-        case 'price-low':
-            sortedProducts.sort((a, b) => a.price - b.price);
-            break;
-        case 'price-high':
-            sortedProducts.sort((a, b) => b.price - a.price);
-            break;
-        case 'name-asc':
-            sortedProducts.sort((a, b) => a.title.localeCompare(b.title));
-            break;
-        case 'name-desc':
-            sortedProducts.sort((a, b) => b.title.localeCompare(a.title));
-            break;
-        default:
-            // Default sorting (keep original order)
-            break;
-    }
-    
-    const startIndex = (currentPage - 1) * productsPerPage;
-    const paginatedProducts = sortedProducts.slice(startIndex, startIndex + productsPerPage);
-    
-    container.innerHTML = paginatedProducts.map(product => `
-        <div class="product" data-id="${product.id}">
-            <div class="product-image-container">
-                <!-- Use the full URL for the image -->
-                <img src="https://fakestoreapi.com/img/${product.image.split('/').pop()}" alt="${product.title}" class="product-image" loading="lazy">
-                ${product.stock < 15 ? '<span class="low-stock">Low Stock</span>' : ''}
-            </div>
-            <div class="product-info">
-                <h3 class="product-title">${product.title}</h3>
-                <div class="product-rating">
-                    ${generateStarRating(product.rating?.rate || 4.5)}
-                    <span class="review-count">(${product.rating?.count || 24})</span>
-                </div>
-                <p class="product-price">$${product.price.toFixed(2)}</p>
-                <button class="add-to-cart-btn" data-id="${product.id}">
-                    <i class="fas fa-cart-plus"></i> Add to Cart
-                </button>
-            </div>
-        </div>
-    `).join('');
-    
-    // Add event listeners to "Add to Cart" buttons
-    document.querySelectorAll('.add-to-cart-btn').forEach(button => {
-        button.addEventListener('click', function(e) {
-            e.stopPropagation();
-            const productId = parseInt(this.dataset.id);
-            const product = productsData.find(p => p.id === productId);
-            if (product) {
-                updateCartItem(product, 1);
-                showAddedToCartNotification(product.title);
-            }
-        });
-    });
-}
+
 
 
 
