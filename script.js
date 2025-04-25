@@ -114,7 +114,7 @@ async function loadProducts() {
 }
 
 
-function renderProducts(products) {
+function renderProducts2(products) {
     const container = document.getElementById('products-container');
     
     // Sort products based on current sort option
@@ -173,6 +173,68 @@ function renderProducts(products) {
         });
     });
 }
+function renderProducts(products) {
+    const container = document.getElementById('products-container');
+    
+    // Sort products based on current sort option
+    let sortedProducts = [...products];
+    switch(currentSort) {
+        case 'price-low':
+            sortedProducts.sort((a, b) => a.price - b.price);
+            break;
+        case 'price-high':
+            sortedProducts.sort((a, b) => b.price - a.price);
+            break;
+        case 'name-asc':
+            sortedProducts.sort((a, b) => a.title.localeCompare(b.title));
+            break;
+        case 'name-desc':
+            sortedProducts.sort((a, b) => b.title.localeCompare(a.title));
+            break;
+        default:
+            // Default sorting (keep original order)
+            break;
+    }
+    
+    const startIndex = (currentPage - 1) * productsPerPage;
+    const paginatedProducts = sortedProducts.slice(startIndex, startIndex + productsPerPage);
+    
+    container.innerHTML = paginatedProducts.map(product => `
+        <div class="product" data-id="${product.id}">
+            <div class="product-image-container">
+                <!-- Use the full URL for the image -->
+                <img src="https://fakestoreapi.com/img/${product.image.split('/').pop()}" alt="${product.title}" class="product-image" loading="lazy">
+                ${product.stock < 15 ? '<span class="low-stock">Low Stock</span>' : ''}
+            </div>
+            <div class="product-info">
+                <h3 class="product-title">${product.title}</h3>
+                <div class="product-rating">
+                    ${generateStarRating(product.rating?.rate || 4.5)}
+                    <span class="review-count">(${product.rating?.count || 24})</span>
+                </div>
+                <p class="product-price">$${product.price.toFixed(2)}</p>
+                <button class="add-to-cart-btn" data-id="${product.id}">
+                    <i class="fas fa-cart-plus"></i> Add to Cart
+                </button>
+            </div>
+        </div>
+    `).join('');
+    
+    // Add event listeners to "Add to Cart" buttons
+    document.querySelectorAll('.add-to-cart-btn').forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const productId = parseInt(this.dataset.id);
+            const product = productsData.find(p => p.id === productId);
+            if (product) {
+                updateCartItem(product, 1);
+                showAddedToCartNotification(product.title);
+            }
+        });
+    });
+}
+
+
 
 function generateStarRating(rating) {
     const fullStars = Math.floor(rating);
