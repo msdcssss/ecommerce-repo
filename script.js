@@ -129,7 +129,7 @@ function renderProducts(products) {
         button.addEventListener('click', function(e) {
             e.stopPropagation();
             const productId = parseInt(this.dataset.id);
-            const product = productsData.find(p => p.id === productId);
+            const product = products.find(p => p.id === productId); // Use the passed 'products' array
             if (product) {
                 updateCartItem(product, 1);
                 showAddedToCartNotification(product.title);
@@ -137,8 +137,6 @@ function renderProducts(products) {
         });
     });
 }
-
-
 
 
 function generateStarRating(rating) {
@@ -203,6 +201,7 @@ function filterProducts(category) {
     
     renderProducts(filteredProducts);
     setupPagination(filteredProducts.length);
+    setupProductModal(); // Add this line
     
     document.querySelectorAll('.filter-btn').forEach(btn => {
         const btnCategory = btn.getAttribute('onclick').match(/'([^']+)'/)[1];
@@ -279,11 +278,6 @@ function changePage(page) {
 }
 
 function setupProductModal() {
-    const oldProducts = document.querySelectorAll('.product');
-    oldProducts.forEach(product => {
-        product.replaceWith(product.cloneNode(true));
-    });
-    
     const products = document.querySelectorAll('.product');
     products.forEach(product => {
         product.addEventListener('click', function(e) {
