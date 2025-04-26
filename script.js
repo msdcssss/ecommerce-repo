@@ -9,9 +9,7 @@ const MAX_ZOOM = 3;
 const MIN_ZOOM = 0.5;
 let appliedCoupon = null;
 
-// Initialize app
 document.addEventListener('DOMContentLoaded', function () {
-    // Close modal when clicking outside
     document.addEventListener('click', function(event) {
         const modal = document.getElementById('productModal');
         if (event.target === modal) {
@@ -19,14 +17,12 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    // Close modal with ESC key
     document.addEventListener('keydown', function(event) {
         if (event.key === 'Escape') {
             closeModal();
         }
     });
 
-    // Initialize page-specific functionality
     if (document.getElementById('products-container')) {
         loadProducts();
         setupSearch();
@@ -67,10 +63,9 @@ async function loadProducts() {
         productsData = await productsResponse.json();
         const categories = await categoriesResponse.json();
         
-        // Enhance products data with stock information
         productsData = productsData.map(product => ({
             ...product,
-            stock: Math.floor(Math.random() * 50) + 10 // Random stock between 10-60
+            stock: Math.floor(Math.random() * 50) + 10 
         }));
         
         renderProducts(productsData);
@@ -89,7 +84,6 @@ async function loadProducts() {
 function renderProducts(products) {
     const container = document.getElementById('products-container');
     
-    // Sort products based on current sort option
     let sortedProducts = [...products];
     switch(currentSort) {
         case 'price-low':
@@ -105,7 +99,6 @@ function renderProducts(products) {
             sortedProducts.sort((a, b) => b.title.localeCompare(a.title));
             break;
         default:
-            // Default sorting (keep original order)
             break;
     }
     
@@ -132,7 +125,6 @@ function renderProducts(products) {
         </div>
     `).join('');
     
-    // Add event listeners to "Add to Cart" buttons
     document.querySelectorAll('.add-to-cart-btn').forEach(button => {
         button.addEventListener('click', function(e) {
             e.stopPropagation();
@@ -169,7 +161,6 @@ function generateStarRating(rating) {
 
 function setupCategoryFilters(categories) {
     const filterContainer = document.getElementById('filter-container');
-    // Ensure we only show categories that exist in productsData
     const validCategories = categories.filter(cat => 
         productsData.some(p => p.category.toLowerCase() === cat.toLowerCase())
     );
@@ -213,7 +204,6 @@ function filterProducts(category) {
     renderProducts(filteredProducts);
     setupPagination(filteredProducts.length);
     
-    // Update active filter buttons
     document.querySelectorAll('.filter-btn').forEach(btn => {
         const btnCategory = btn.getAttribute('onclick').match(/'([^']+)'/)[1];
         btn.classList.toggle('active', btnCategory === category);
@@ -236,7 +226,6 @@ function setupPagination(totalProducts) {
         </button>
     `;
     
-    // Show first page, current page with neighbors, and last page
     const maxVisiblePages = 5;
     let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
     let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
@@ -285,22 +274,19 @@ function changePage(page) {
         filteredProducts = productsData.filter(product => product.category === currentCategory);
     }
     renderProducts(filteredProducts);
-    setupProductModal(); // Reattach modal listeners
+    setupProductModal(); 
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function setupProductModal() {
-    // Remove any existing listeners first
     const oldProducts = document.querySelectorAll('.product');
     oldProducts.forEach(product => {
         product.replaceWith(product.cloneNode(true));
     });
     
-    // Attach new listeners
     const products = document.querySelectorAll('.product');
     products.forEach(product => {
         product.addEventListener('click', function(e) {
-            // Don't open modal if clicking on a button inside the product
             if (e.target.closest('button')) return;
             
             const productId = this.dataset.id;
@@ -314,11 +300,9 @@ function showProductModal(product) {
     const modal = document.getElementById('productModal');
     const modalImage = document.getElementById('modalProductImage');
     
-    // Reset zoom
     zoomLevel = 1;
     modalImage.style.transform = `scale(${zoomLevel})`;
     
-    // Set product data
     modalImage.src = product.image;
     modalImage.alt = product.title;
     document.getElementById('modalProductTitle').textContent = product.title;
@@ -329,11 +313,9 @@ function showProductModal(product) {
     document.getElementById('modalProductCategory').textContent = 
         product.category.charAt(0).toUpperCase() + product.category.slice(1);
     
-    // Set initial quantity (either existing in cart or 1)
     const cartItem = cart.find(item => item.id === product.id);
     document.getElementById('productQuantity').value = cartItem ? cartItem.quantity : 1;
     
-    // Setup zoom controls
     document.getElementById('zoom-in').addEventListener('click', function(e) {
         e.stopPropagation();
         if (zoomLevel < MAX_ZOOM) {
@@ -350,7 +332,6 @@ function showProductModal(product) {
         }
     });
     
-    // Quantity controls
     const quantityInput = document.getElementById('productQuantity');
     document.getElementById('incrementQty').addEventListener('click', () => {
         quantityInput.value = Math.min(parseInt(quantityInput.value) + 1, product.stock);
@@ -364,7 +345,6 @@ function showProductModal(product) {
         this.value = Math.max(1, Math.min(parseInt(this.value) || 1, product.stock));
     });
     
-    // Add to cart from modal
     document.getElementById('addToCartModal').addEventListener('click', () => {
         const newQuantity = parseInt(quantityInput.value);
         updateCartItem(product, newQuantity);
@@ -372,7 +352,6 @@ function showProductModal(product) {
         closeModal();
     });
     
-    // Close button
     document.querySelector('.close-modal').addEventListener('click', closeModal);
     
     modal.style.display = 'block';
@@ -410,7 +389,6 @@ function closeModal() {
     }
 }
 
-// Cart functionality
 function updateCartItem(product, quantity) {
     const existingIndex = cart.findIndex(item => item.id === product.id);
     
@@ -431,8 +409,7 @@ function removeFromCart(productId) {
     cart = cart.filter(item => item.id !== productId);
     updateCart();
     
-    // Redirect to index if cart is empty and we're on cart page
-    if (cart.length === 0 && window.location.pathname.includes('cart.html')) {
+    if (cart.length === 0 && document.getElementById('cart-items')) {
         document.getElementById('cart-items').style.display = 'none';
         document.getElementById('cart-summary').style.display = 'none';
         document.getElementById('empty-cart-message').style.display = 'flex';
@@ -456,7 +433,6 @@ function updateCartIcon() {
     });
 }
 
-// Cart rendering
 function renderCart() {
     const container = document.getElementById('cart-items');
     const emptyMessage = document.getElementById('empty-cart-message');
@@ -531,7 +507,6 @@ function renderCheckoutItems() {
     document.getElementById('grand-total-price').textContent = `$${total.toFixed(2)}`;
 }
 
-// Helper functions
 function adjustQuantity(productId, change) {
     const item = cart.find(item => item.id === productId);
     if (item) {
@@ -556,7 +531,6 @@ function setupSearch() {
     searchInput.addEventListener('input', performSearch);
     searchBtn.addEventListener('click', performSearch);
     
-    // Search on Enter key
     searchInput.addEventListener('keypress', function(e) {
         if (e.key === 'Enter') {
             performSearch();
@@ -609,7 +583,6 @@ function setupCoupon() {
     applyBtn.addEventListener('click', function() {
         const couponCode = couponInput.value.trim();
         
-        // In a real app, you would validate the coupon with a server
         if (couponCode === 'SAVE10') {
             appliedCoupon = { type: 'percentage', value: 10 };
             showNotification('Coupon applied: 10% off!', 'success');
@@ -664,7 +637,6 @@ function setupNewsletter() {
         newsletterForm.addEventListener('submit', function(e) {
             e.preventDefault();
             const email = this.querySelector('input[type="email"]').value;
-            // In a real app, you would send this to your server
             showNotification('Thanks for subscribing!', 'success');
             this.reset();
         });
@@ -674,7 +646,6 @@ function setupNewsletter() {
 function handleCheckout(e) {
     e.preventDefault();
     
-    // Form validation
     const name = document.getElementById('name').value.trim();
     const email = document.getElementById('email').value.trim();
     const phone = document.getElementById('phone').value.trim();
@@ -688,20 +659,17 @@ function handleCheckout(e) {
         return;
     }
     
-    // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
         showNotification('Please enter a valid email address', 'error');
         return;
     }
     
-    // Validate phone number (basic validation)
     if (phone.replace(/\D/g, '').length < 10) {
         showNotification('Please enter a valid phone number', 'error');
         return;
     }
     
-    // If credit card is selected, validate card details
     const paymentMethod = document.querySelector('input[name="payment"]:checked').value;
     if (paymentMethod === 'credit') {
         const cardNumber = document.getElementById('card-number').value.trim();
@@ -713,36 +681,30 @@ function handleCheckout(e) {
             return;
         }
         
-        // Basic card number validation (16 digits)
         if (cardNumber.replace(/\D/g, '').length !== 16) {
             showNotification('Please enter a valid card number', 'error');
             return;
         }
         
-        // Basic expiry date validation (MM/YY format)
         if (!/^\d{2}\/\d{2}$/.test(expiry)) {
             showNotification('Please enter a valid expiry date (MM/YY)', 'error');
             return;
         }
         
-        // Basic CVV validation (3-4 digits)
+  
         if (!/^\d{3,4}$/.test(cvv)) {
             showNotification('Please enter a valid CVV', 'error');
             return;
         }
     }
     
-    // Check terms checkbox
     if (!document.getElementById('terms').checked) {
         showNotification('Please agree to the terms and conditions', 'error');
         return;
     }
     
-    // In a real app, you would process payment here
-    // For demo purposes, we'll simulate a successful order
     showNotification('Order submitted successfully!', 'success');
     
-    // Clear cart and redirect after a delay
     setTimeout(() => {
         cart = [];
         updateCart();
